@@ -1,0 +1,3 @@
+#! /bin/sh
+
+[ -d "$SNAP_DATA/db" ] || cp -av $SNAP/dist/db-orig $SNAP_DATA/db

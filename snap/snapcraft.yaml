@@ -1,0 +1,67 @@
+name: dashkiosk
+adopt-info: dashkiosk
+summary: Drive a set of screens displaying dashboards
+description: |
+  Dashkiosk is a solution to manage dashboards on multiple screens. It comes as four components
+
+   - A receiver runs in a browser attached to each screen and will display the requested dashboards. The receiver is quite dumb, it contacts the server and wait for it to tell which URL to display.
+
+   - A server which will manage the screens by sending them what they should display. An administration interface allows the user to manage those screens individually or in a group.
+
+   - An Android app that will run the receiver. This is mainly a fullscreen webview. There is also a Firefox app fulfilling the same purpose.
+
+   - A Chromecast custom receiver which will run the regular receiver if you want to display dashboards using Google Chromecast devices.
+
+grade: stable
+confinement: strict
+
+apps:
+  dashkiosk:
+    command: node $SNAP/dist/server.js --environment production
+    environment:
+      NODE_PATH: $SNAP/node_modules
+    daemon: simple
+    plugs:
+      - network
+      - network-bind
+
+parts:
+  dashkiosk:
+    source: https://github.com/vincentbernat/dashkiosk.git
+    source-tag: v2.7.3
+    source-depth: 1
+    plugin: nodejs
+    node-engine: "8.12.0"
+    node-packages:
+      - bower
+      - grunt-cli
+    override-build: |
+      VER="$(git tag|tail -1)"
+      echo "setting version to $VER"
+      snapcraftctl set-version $VER
+      npm install
+      grunt
+      cd dist
+      npm install --production
+      cd -
+      cp -av * $SNAPCRAFT_PART_INSTALL/
+      rm $SNAPCRAFT_PART_INSTALL/lib/node_modules/dashkiosk
+      ln -s ../../ $SNAPCRAFT_PART_INSTALL/lib/node_modules/dashkiosk
+    override-prime: |
+      snapcraftctl prime
+      mv dist/db dist/db-orig
+      ln -s /var/snap/dashkiosk/current/db dist/db
+    build-packages:
+      - libavahi-compat-libdnssd-dev
+      - libjpeg-progs
+      - optipng
+      - gifsicle
+      - git
+    stage-packages:
+      - libavahi-client3
+      - libavahi-common3
+      - libavahi-compat-libdnssd1
+      - sqlite3
+      - libjpeg-progs
+      - optipng
+      - gifsicle
