@@ -17,7 +17,7 @@ confinement: strict
 
 apps:
   dashkiosk:
-    command: node $SNAP/dist/server.js --environment production
+    command: node $SNAP/dist/server.js --configuration $SNAP_DATA/config.json
     environment:
       NODE_PATH: $SNAP/node_modules
     daemon: simple
@@ -47,10 +47,6 @@ parts:
       cp -av * $SNAPCRAFT_PART_INSTALL/
       rm $SNAPCRAFT_PART_INSTALL/lib/node_modules/dashkiosk
       ln -s ../../ $SNAPCRAFT_PART_INSTALL/lib/node_modules/dashkiosk
-    override-prime: |
-      snapcraftctl prime
-      mv dist/db dist/db-orig
-      ln -s /var/snap/dashkiosk/current/db dist/db
     build-packages:
       - libavahi-compat-libdnssd-dev
       - libjpeg-progs

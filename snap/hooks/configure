@@ -1,0 +1,45 @@
+#! /bin/sh
+
+PORT=$(snapctl get port)
+[ -n "$PORT" ] || PORT="9400"
+
+ADMIN=$(snapctl get admin)
+[ -n "$ADMIN" ] || ADMIN="admin"
+
+REALM=$(snapctl get realm)
+[ -n "$REALM" ] || REALM="dashkiosk"
+
+PASSWD="$(snapctl get password)"
+
+cat << EOF >$SNAP_DATA/config.json
+{
+    "environment": "production",
+    "port": "$PORT",
+    "db": {
+        "options": {
+            "database": "dashkiosk",
+            "storage": "$SNAP_DATA/db/dashkiosk.sqlite",
+            "dialect": "sqlite"
+        }
+    },
+    "log": {
+        "file": "$SNAP_DATA/dashkiosk.log"
+EOF
+
+if [ -n "$PASSWD" ]; then
+    cat << EOF >>$SNAP_DATA/config.json
+    },
+    "auth": {
+        "enabled": "true",
+        "realm": "$REALM",
+        "username": "$ADMIN",
+        "password": "$PASSWD"
+    }
+EOF
+else
+    echo "    }" >>$SNAP_DATA/config.json
+fi
+
+echo "}" >>$SNAP_DATA/config.json
+
+snapctl restart dashkiosk
