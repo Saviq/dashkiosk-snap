@@ -49,6 +49,7 @@ parts:
       rm $SNAPCRAFT_PART_INSTALL/lib/node_modules/dashkiosk
       ln -s ../../ $SNAPCRAFT_PART_INSTALL/lib/node_modules/dashkiosk
     build-packages:
+      - build-essential
       - libavahi-compat-libdnssd-dev
       - libjpeg-progs
       - optipng
