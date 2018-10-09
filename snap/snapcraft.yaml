@@ -50,6 +50,7 @@ parts:
       ln -s ../../ $SNAPCRAFT_PART_INSTALL/lib/node_modules/dashkiosk
     build-packages:
       - autoconf
+      - automake
       - build-essential
       - libavahi-compat-libdnssd-dev
       - libjpeg-progs
