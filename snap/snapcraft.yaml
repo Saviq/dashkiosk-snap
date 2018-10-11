@@ -54,9 +54,11 @@ parts:
       - build-essential
       - libavahi-compat-libdnssd-dev
       - libjpeg-progs
+      - libpng-dev
       - optipng
       - gifsicle
       - git
+      - zlib1g-dev
     stage-packages:
       - libavahi-client3
       - libavahi-common3
